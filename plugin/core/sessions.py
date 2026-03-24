@@ -1702,8 +1702,6 @@ class Session(APIHandler, TransportCallbacks['dict[str, Any]']):
     # --- Workspace Pull Diagnostics -----------------------------------------------------------------------------------
 
     def do_workspace_diagnostics_async(self) -> None:
-        if not self.config.diagnostics_mode == 'workspace':
-            return
         if not self.get_workspace_folders():
             return
         for identifier in self.diagnostics.workspace_diagnostics_identifiers:
