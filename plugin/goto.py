@@ -20,6 +20,7 @@ from .core.url import parse_uri
 from .core.views import diagnostic_severity
 from .core.views import first_selection_region
 from .core.views import get_symbol_kind_from_scope
+from .core.views import is_markup_content
 from .core.views import position_to_offset
 from .core.views import range_to_region
 from .core.views import text_document_position_params
@@ -301,9 +302,10 @@ class DiagnosticInputHandler(sublime_plugin.ListInputHandler):
         caret_pos = region.b if self._preview and (region := first_selection_region(self._preview)) is not None else 0
         for index, diagnostic_data in enumerate(self.diagnostics):
             diagnostic = diagnostic_data['diagnostic']
-            message = diagnostic['message'] or '…'
+            message = diagnostic['message']
+            raw_message = (message['value'] if is_markup_content(message) else message) or '…'
             severity = diagnostic_severity(diagnostic)
-            text = f"{'_EWIH'[severity]}: {message.splitlines()[0]}"
+            text = f"{'_EWIH'[severity]}: {raw_message.splitlines()[0]}"
             value = cast(dict, diagnostic_data)
             code = str(diagnostic.get('code', ''))
             kind = DIAGNOSTIC_KINDS[severity]

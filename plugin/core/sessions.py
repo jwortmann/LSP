@@ -485,6 +485,7 @@ def get_initialize_params(variables: dict[str, str], workspace_folders: list[Wor
                 "valueSet": diagnostic_tag_value_set
             },
             "codeDescriptionSupport": True,
+            "markupMessageSupport": True,
             "dataSupport": True
         },
         "selectionRange": {

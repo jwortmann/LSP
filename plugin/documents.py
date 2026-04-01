@@ -590,7 +590,7 @@ class DocumentSyncListener(sublime_plugin.ViewEventListener, AbstractViewListene
         base_dir = self._manager.get_project_path(filename) \
             if self._manager and (filename := self.view.file_name()) else None
         content = format_diagnostics_for_html(
-            self.view.change_count(), diagnostics, dict(code_actions), self.lightbulb_color, base_dir)
+            self.view, diagnostics, dict(code_actions), self.lightbulb_color, base_dir)
         show_lsp_popup(
             self.view,
             content,
