@@ -769,7 +769,7 @@ def format_diagnostic_for_panel(diagnostic: Diagnostic) -> tuple[str, int | None
     """
     formatted, code, href = diagnostic_source_and_code(diagnostic)
     message = diagnostic['message']
-    lines = (message['value'] if is_markup_content(message) else message).splitlines() or [""]  # pyright: ignore[reportArgumentType]  # TODO remove comment when lsp-types are updated
+    lines = (message['value'] if is_markup_content(message) else message).splitlines() or [""]
     result = " {:>4}:{:<4}{:<8}{}".format(
         diagnostic["range"]["start"]["line"] + 1,
         diagnostic["range"]["start"]["character"] + 1,
@@ -846,7 +846,7 @@ def _format_diagnostic_message(view: sublime.View, message: str | MarkupContent)
         if html.startswith('<p>') and html.endswith('</p>'):
             html = html[3:-4]
         return html
-    return text2html(message)  # pyright: ignore[reportArgumentType]  # TODO remove comment when lsp-types are updated
+    return text2html(message)
 
 
 def _format_diagnostic_related_info(
@@ -925,7 +925,7 @@ def format_diagnostic_for_html(
     base_dir: str | None = None
 ) -> str:
     message = diagnostic['message']
-    raw_message = message['value'] if is_markup_content(message) else message  # pyright: ignore[reportArgumentType]  # TODO remove comment when lsp-types are updated
+    raw_message = message['value'] if is_markup_content(message) else message
     content = _format_diagnostic_message(view, message)
     code = diagnostic.get("code")
     source = diagnostic.get("source")

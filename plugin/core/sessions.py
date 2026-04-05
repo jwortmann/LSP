@@ -485,7 +485,7 @@ def get_initialize_params(variables: dict[str, str], workspace_folders: list[Wor
                 "valueSet": diagnostic_tag_value_set
             },
             "codeDescriptionSupport": True,
-            "markupMessageSupport": True,  # pyright: ignore[reportAssignmentType]  # TODO remove comment when lsp-types are updated
+            "markupMessageSupport": True,
             "dataSupport": True
         },
         "selectionRange": {

@@ -303,7 +303,7 @@ class DiagnosticInputHandler(sublime_plugin.ListInputHandler):
         for index, diagnostic_data in enumerate(self.diagnostics):
             diagnostic = diagnostic_data['diagnostic']
             message = diagnostic['message']
-            raw_message = (message['value'] if is_markup_content(message) else message) or '…'  # pyright: ignore[reportArgumentType]  # TODO remove comment when lsp-types are updated
+            raw_message = (message['value'] if is_markup_content(message) else message) or '…'
             severity = diagnostic_severity(diagnostic)
             text = f"{'_EWIH'[severity]}: {raw_message.splitlines()[0]}"
             value = cast(dict, diagnostic_data)
