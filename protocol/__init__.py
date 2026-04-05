@@ -7558,6 +7558,13 @@ class DiagnosticClientCapabilities(TypedDict):
 
     @since 3.16.0
     """
+    markupMessageSupport: NotRequired[bool]
+    """
+    Whether the client supports `MarkupContent` in diagnostic messages.
+
+    @since 3.18.0
+    @proposed
+    """
     dataSupport: NotRequired[bool]
     """
     Whether code action supports the `data` property which is
