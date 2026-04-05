@@ -67,7 +67,6 @@ from typing import Iterable
 from typing import Sequence
 from typing import Tuple
 from typing import TYPE_CHECKING
-from typing_extensions import TypeIs
 import html
 import itertools
 import linecache
@@ -146,10 +145,6 @@ class DiagnosticSeverityData:
 class InvalidUriSchemeError(Exception):
     def __init__(self, uri: str) -> None:
         super().__init__(f"invalid URI scheme: {uri}")
-
-
-def is_markup_content(message: str | MarkupContent) -> TypeIs[MarkupContent]:
-    return isinstance(message, dict)
 
 
 def get_line(window: sublime.Window, file_name: str, row: int, strip: bool = True) -> str:
@@ -769,7 +764,7 @@ def format_diagnostic_for_panel(diagnostic: Diagnostic) -> tuple[str, int | None
     """
     formatted, code, href = diagnostic_source_and_code(diagnostic)
     message = diagnostic['message']
-    lines = (message['value'] if is_markup_content(message) else message).splitlines() or [""]
+    lines = (message['value'] if isinstance(message, dict) else message).splitlines() or [""]
     result = " {:>4}:{:<4}{:<8}{}".format(
         diagnostic["range"]["start"]["line"] + 1,
         diagnostic["range"]["start"]["character"] + 1,
@@ -841,7 +836,7 @@ def is_location_href(href: str) -> bool:
 
 
 def _format_diagnostic_message(view: sublime.View, message: str | MarkupContent) -> str:
-    if is_markup_content(message):
+    if isinstance(message, dict):
         html = minihtml(view, message, FORMAT_MARKUP_CONTENT)
         if html.startswith('<p>') and html.endswith('</p>'):
             html = html[3:-4]
@@ -925,7 +920,7 @@ def format_diagnostic_for_html(
     base_dir: str | None = None
 ) -> str:
     message = diagnostic['message']
-    raw_message = message['value'] if is_markup_content(message) else message
+    raw_message = message['value'] if isinstance(message, dict) else message
     content = _format_diagnostic_message(view, message)
     code = diagnostic.get("code")
     source = diagnostic.get("source")

@@ -360,7 +360,9 @@ class DocumentSyncListener(sublime_plugin.ViewEventListener, AbstractViewListene
             if session_buffer_diagnostics:
                 for _, diagnostics in session_buffer_diagnostics:
                     if diag := next(iter(diagnostics), None):
-                        self.view.set_status(self.ACTIVE_DIAGNOSTIC, diag["message"])
+                        message = diag['message']
+                        msg = message['value'] if isinstance(message, dict) else message
+                        self.view.set_status(self.ACTIVE_DIAGNOSTIC, msg)
                         return
         self.view.erase_status(self.ACTIVE_DIAGNOSTIC)
 
