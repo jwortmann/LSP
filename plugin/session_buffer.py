@@ -800,7 +800,7 @@ class SessionBuffer:
     def _on_type_formatting_result_async(
         self, view: sublime.View, version: int, result: list[TextEdit] | Error | None
     ) -> None:
-        if version == view.change_count() and not isinstance(result, Error):
+        if result and not isinstance(result, Error) and version == view.change_count():
             apply_text_edits(view, result)
 
     # --- textDocument/semanticTokens ----------------------------------------------------------------------------------
