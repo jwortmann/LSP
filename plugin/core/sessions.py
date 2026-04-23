@@ -771,7 +771,7 @@ class SessionBufferProtocol(Protocol):
         view: sublime.View,
         region: sublime.Region,
         diagnostics: list[Diagnostic],
-        kinds: list[CodeActionKind] | None = ...,
+        kinds: list[str | CodeActionKind] | None = ...,
         trigger_kind: CodeActionTriggerKind = ...
     ) -> Promise[list[Command | CodeAction] | Error | None]:
         ...
