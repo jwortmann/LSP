@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ...protocol import AnnotatedTextEdit
 from ...protocol import ApplyWorkspaceEditParams
 from ...protocol import ApplyWorkspaceEditResult
 from ...protocol import ClientCapabilities
@@ -52,6 +53,7 @@ from ...protocol import ShowDocumentResult
 from ...protocol import ShowMessageParams
 from ...protocol import ShowMessageRequestParams
 from ...protocol import SignatureHelpTriggerKind
+from ...protocol import SnippetTextEdit
 from ...protocol import SymbolKind
 from ...protocol import SymbolTag
 from ...protocol import TextDocumentClientCapabilities
@@ -534,7 +536,9 @@ def get_initialize_params(
             "failureHandling": FailureHandlingKind.Abort,
             "changeAnnotationSupport": {
                 "groupsOnLabel": False
-            }
+            },
+            "metadataSupport": True,
+            "snippetEditSupport": True
         },
         "workspaceFolders": True,
         "symbol": {
@@ -1635,7 +1639,7 @@ class Session(APIHandler, TransportCallbacks):
     ) -> Promise[WorkspaceEditSummary]:
 
         def handle_view(
-            edits: list[TextEdit],
+            edits: list[TextEdit | AnnotatedTextEdit | SnippetTextEdit],
             label: str | None,
             view_version: int | None,
             uri: str,
@@ -1862,8 +1866,10 @@ class Session(APIHandler, TransportCallbacks):
 
     @request_handler('workspace/applyEdit')
     def on_workspace_apply_edit(self, params: ApplyWorkspaceEditParams) -> Promise[ApplyWorkspaceEditResult]:
-        return self.apply_workspace_edit_async(params.get('edit', {}), label=params.get('label')) \
-            .then(lambda _: {"applied": True})
+        is_refactoring = params.get('metadata', {}).get('isRefactoring', False)
+        return self.apply_workspace_edit_async(
+            params['edit'], label=params.get('label'), is_refactoring=is_refactoring
+        ).then(lambda _: {'applied': True})
 
     @request_handler('workspace/codeLens/refresh')
     def on_workspace_code_lens_refresh(self, _: None) -> Promise[None]:
