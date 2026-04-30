@@ -1592,10 +1592,8 @@ class Session(APIHandler, TransportCallbacks):
     def _on_text_document_content_refreshed_async(
         self, view: sublime.View, response: TextDocumentContentResult
     ) -> None:
-        if view.is_valid():
-            content = response['text'].replace('\r', '')
-            if text != entire_content(view):
-                view.run_command('lsp_replace_readonly_content', {'content': content})
+        if view.is_valid() and (content := response['text'].replace('\r', '')) != entire_content(view):
+            view.run_command('lsp_replace_readonly_content', {'content': content})
 
     def open_location_async(
         self,
