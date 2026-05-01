@@ -141,10 +141,12 @@ from .url import filename_to_uri
 from .url import normalize_uri
 from .url import parse_uri
 from .version import __version__
-from .views import entire_content
+from .views import entire_content_region
+from .views import first_selection_region
 from .views import get_uri_and_range_from_location
 from .views import kind_contains_other_kind
 from .views import MissingUriError
+from .views import mutable
 from .views import uri_from_view
 from .workspace import is_subpath_of
 from .workspace import WorkspaceFolder
@@ -1586,14 +1588,27 @@ class Session(APIHandler, TransportCallbacks):
     ) -> Promise[sublime.View | None]:
         if isinstance(response, Error):
             return Promise.resolve(None)
+        title = urlparse(uri).path.split('/')[-1]
         content = response['text'].replace('\r', '')
-        return self.open_scratch_buffer(urlparse(uri).path.split('/')[-1], content, '', uri, r, flags, group)
+        return self.open_scratch_buffer(title, content, '', uri, r, flags, group)
 
     def _on_text_document_content_refreshed_async(
         self, view: sublime.View, response: TextDocumentContentResult
     ) -> None:
-        if view.is_valid() and (content := response['text'].replace('\r', '')) != entire_content(view):
-            view.run_command('lsp_replace_readonly_content', {'content': content})
+        if not view.is_valid():
+            return
+        new_content = response['text'].replace('\r', '')
+        content_region = entire_content_region(view)
+        if new_content == view.substr(content_region):
+            return
+        selection_region = first_selection_region(view)
+        selection = view.sel()
+        selection.add(content_region)
+        with mutable(view):
+            view.run_command('insert', {'characters': new_content})
+        if selection_region is not None and selection_region.begin() < view.size():
+            selection.clear()
+            selection.add(selection_region)
 
     def open_location_async(
         self,

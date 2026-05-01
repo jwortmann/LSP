@@ -689,13 +689,6 @@ class LspRunTextCommandHelperCommand(sublime_plugin.WindowCommand):
             view.run_command(command, args)
 
 
-class LspReplaceReadonlyContentCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit: sublime.Edit, content: str) -> None:
-        with mutable(self.view):
-            self.view.replace(edit, entire_content_region(self.view), content)
-
-
 COLOR_BOX_HTML = """
 <style>
     html {{
