@@ -1174,10 +1174,10 @@ class Session(APIHandler, TransportCallbacks):
             return any(sb.has_capability(capability) for sb in self.session_buffers_async())
         return False
 
-    def get_capability(self, capability: str) -> Any | None:
+    def get_capability(self, capability: str, default: Any = None) -> Any:
         if self.config.is_disabled_capability(capability):
-            return None
-        return self.capabilities.get(capability)
+            return default
+        return self.capabilities.get(capability, default)
 
     def should_notify_did_open(self) -> bool:
         return self.capabilities.should_notify_did_open()
@@ -1474,7 +1474,7 @@ class Session(APIHandler, TransportCallbacks):
             view = self.window.new_file(flags)
             view.set_scratch(True)
             return Promise.resolve(view)
-        if scheme in self.capabilities.get('workspace.textDocumentContent.schemes', []):
+        if scheme in self.get_capability('workspace.textDocumentContent.schemes', []):
             return self.send_request_task(Request('workspace/textDocumentContent', {'uri': uri})) \
                 .then(partial(self._on_text_document_content_async, uri, r, flags, group))
         # There is no pre-existing session-buffer, so we have to go through the plugin's URI handler.
